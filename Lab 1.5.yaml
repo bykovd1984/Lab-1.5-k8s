@@ -4,6 +4,11 @@ metadata:
   name: bykovd-lab1-5
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1        # how many pods we can add at a time
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: bykovd-lab1.5
@@ -14,7 +19,7 @@ spec:
     spec:
       containers:
       - name: bykovd-lab1-5
-        image: bykovd1984/softwarearchitect-lab1.5:1.1
+        image: bykovd1984/softwarearchitect-lab1.5:1.3
         resources:
           limits:
             memory: "128Mi"
@@ -35,22 +40,28 @@ spec:
     targetPort: 8000
     nodePort: 30123
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: bykovd-lab1.5-ingress
-  labels:
-      name: bykovd-lab1.5-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /student/$1
+  name: rewrite
+  namespace: default
 spec:
   rules:
   - host: arch.homework
     http:
       paths:
+      - backend:
+          serviceName: bykovd-lab1-5-nodeport
+          servicePort: 80
+        path: /otusapp/(.*)
       - pathType: Prefix
         path: "/"
         backend:
           serviceName: bykovd-lab1-5-nodeport
-          servicePort: 80
+          servicePort: 80        
+
 
 
   
