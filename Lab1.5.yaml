@@ -68,11 +68,22 @@ spec:
           serviceName: bykovd-lab1-5-nodeport
           servicePort: 80
         path: /otusapp/(.*)
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: bykovd-lab1-5-ingress
+  namespace: default
+spec:
+  rules:
+  - host: arch.homework
+    http:
+      paths:
       - pathType: Prefix
         path: "/"
         backend:
           serviceName: bykovd-lab1-5-nodeport
-          servicePort: 80        
+          servicePort: 80                  
 
 
 
